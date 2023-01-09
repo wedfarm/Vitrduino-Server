@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Test</title>
+</head>
+<body>
+
+	<table id="table">
+	</table>
+
+	<script>
+		setInterval(function() {
+			// odeslani http pozavadku na /getData s parametrem ts nastavenym na nulu
+			// 'getData?ts=' + (Date.now() - 60)
+			// (nyni - 60 sec = vsechny data za posledni minutu)
+			fetch('/getData?ts=0')
+				.then(function(res) { return res.json(); })
+				.then(function(json) {
+
+					// vytvoris nazev sloupecku
+					var newTable = "<tr><td>ID</td><td>time</td><td>teplota</td></tr>";
+
+					// projdes vsechny radky z jsonu (kterej to ma z db)
+					for(row of json) {
+						var id = row.id;
+						var timestamp = row.timestamp;
+						var temp = row.temp;
+
+						newTable += `
+						<tr>
+							<td>${id}</td> 
+							<td>${new Date(timestamp).toLocaleString("cs-CZ")}</td> 
+							<td>${temp}°C</td>
+						</tr>
+						`; 
+					}
+
+					document.getElementById("table").innerHTML = newTable;
+				});
+		}, 3000); // 3000 ms = 3 sec interval - opakuje se
+	</script>
+</body>
+</html>
